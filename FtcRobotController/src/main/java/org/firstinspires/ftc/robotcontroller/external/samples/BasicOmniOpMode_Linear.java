@@ -29,7 +29,6 @@
 
 package org.firstinspires.ftc.robotcontroller.external.samples;
 
-import com.qualcomm.robotcore.eventloop.opmode.Disabled;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
@@ -64,7 +63,7 @@ import com.qualcomm.robotcore.util.ElapsedTime;
  */
 
 @TeleOp(name="Basic: Omni Linear OpMode", group="Linear OpMode")
-@Disabled
+
 public class BasicOmniOpMode_Linear extends LinearOpMode {
 
     // Declare OpMode members for each of the 4 motors.
@@ -73,6 +72,7 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
     private DcMotor backLeftDrive = null;
     private DcMotor frontRightDrive = null;
     private DcMotor backRightDrive = null;
+    double PowerScaler = 1;
 
     @Override
     public void runOpMode() {
@@ -128,11 +128,25 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             max = Math.max(max, Math.abs(backLeftPower));
             max = Math.max(max, Math.abs(backRightPower));
 
-            if (max > 1.0) {
-                frontLeftPower  /= max;
+            double incrimentValue = .05;
+
+            if (gamepad1.aWasPressed()) {
+                PowerScaler += incrimentValue;
+            }
+
+            if (gamepad1.yWasPressed()) {
+                PowerScaler -= incrimentValue;
+            }
+
+            PowerScaler = Math.max(0, PowerScaler);
+            PowerScaler = Math.min(1, PowerScaler);
+
+
+            if (max > 1) {
+                frontLeftPower /= max;
                 frontRightPower /= max;
-                backLeftPower   /= max;
-                backRightPower  /= max;
+                backLeftPower /= max;
+                backRightPower /= max;
             }
 
             // This is test code:
@@ -153,15 +167,18 @@ public class BasicOmniOpMode_Linear extends LinearOpMode {
             */
 
             // Send calculated power to wheels
-            frontLeftDrive.setPower(frontLeftPower);
-            frontRightDrive.setPower(frontRightPower);
-            backLeftDrive.setPower(backLeftPower);
-            backRightDrive.setPower(backRightPower);
+
+            frontLeftDrive.setPower(frontLeftPower * PowerScaler);
+            frontRightDrive.setPower(frontRightPower * PowerScaler);
+            backLeftDrive.setPower(backLeftPower * PowerScaler);
+            backRightDrive.setPower(backRightPower * PowerScaler);
 
             // Show the elapsed game time and wheel power.
+            telemetry.addData("Max power: ", PowerScaler);
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             telemetry.addData("Front left/Right", "%4.2f, %4.2f", frontLeftPower, frontRightPower);
             telemetry.addData("Back  left/Right", "%4.2f, %4.2f", backLeftPower, backRightPower);
             telemetry.update();
         }
-    }}
+    }
+}
