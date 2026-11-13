@@ -32,6 +32,8 @@ TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 
+import static java.lang.Math.sin;
+
 import com.qualcomm.hardware.limelightvision.LLResult;
 import com.qualcomm.hardware.limelightvision.LLResultTypes;
 import com.qualcomm.hardware.limelightvision.LLStatus;
@@ -42,6 +44,8 @@ import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.navigation.Pose3D;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
 import java.util.List;
 
 /*
@@ -71,10 +75,16 @@ public class TurretTest extends LinearOpMode {
 
     private Limelight3A limelight;
     private Servo turret;
+    double xOffset;
+    double yOffset;
+
 
     @Override
     public void runOpMode() throws InterruptedException
     {
+        DecimalFormat df = new DecimalFormat("#.##");
+        df.setRoundingMode(RoundingMode.FLOOR);
+
         limelight = hardwareMap.get(Limelight3A.class, "limelight");
         turret = hardwareMap.get(Servo.class, "turret");
 
@@ -118,15 +128,18 @@ public class TurretTest extends LinearOpMode {
                 double captureLatency = result.getCaptureLatency();
                 double targetingLatency = result.getTargetingLatency();
                 double parseLatency = result.getParseLatency();
-                telemetry.addData("LL Latency", captureLatency + targetingLatency);
-                telemetry.addData("Parse Latency", parseLatency);
+                telemetry.addData("LL Latency", df.format(captureLatency + targetingLatency));
+                telemetry.addData("Parse Latency", df.format(parseLatency));
                 telemetry.addData("PythonOutput", java.util.Arrays.toString(result.getPythonOutput()));
 
-                telemetry.addData("tx", result.getTx());
+                telemetry.addData("tx", df.format(result.getTx()));
+                // Get the x angle from the Camera Data
                 double angleX = result.getTx();
-                telemetry.addData("txnc", result.getTxNC());
-                telemetry.addData("ty", result.getTy());
-                telemetry.addData("tync", result.getTyNC());
+                telemetry.addData("txnc", df.format(result.getTxNC()));
+                telemetry.addData("ty", df.format(result.getTy()));
+                // Get y angle from Camera Data
+                double angleY = result.getTy();
+                telemetry.addData("tync", df.format(result.getTyNC()));
 
                 telemetry.addData("Botpose", botpose.toString());
 
@@ -160,8 +173,21 @@ public class TurretTest extends LinearOpMode {
                     telemetry.addData("Color", "X: %.2f, Y: %.2f", cr.getTargetXDegrees(), cr.getTargetYDegrees());
                 }
 
+                // Calculate postion of servo based on angle given in camera
                 double pos = angleX/300 + 0.3;
                 turret.setPosition(pos);
+
+                // Calculate distance to AprilTag
+                /* Some experimental results
+                 * Measured | Real
+                 * 153      | 158
+                 * 141      | 147
+                 * 207      | 200
+                 * 135      | 134 */
+                double heightLimelight = 11.0;
+                double AprilTagHeight = 126.0;
+                double distanceToTag = (AprilTagHeight-heightLimelight)/sin((45.0+angleY) * Math.PI /180.0);
+                telemetry.addData("Distance To Tag: ", df.format(distanceToTag));
 
             } else {
                 telemetry.addData("Limelight", "No data available");
