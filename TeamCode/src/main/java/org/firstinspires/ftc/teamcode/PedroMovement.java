@@ -1,0 +1,55 @@
+package org.firstinspires.ftc.teamcode;
+
+import com.qualcomm.robotcore.eventloop.opmode.OpMode;
+import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.pedropathing.follower.Follower;
+import org.firstinspires.ftc.teamcode.pedro.Constants;
+import com.pedropathing.api.PoseFactory;
+import com.pedropathing.math.Pose;
+import static com.pedropathing.api.Paths.*;
+import com.pedropathing.paths.Path;
+import com.pedropathing.ivy.Scheduler;
+import static com.pedropathing.ivy.Scheduler.schedule;
+import static com.pedropathing.ivy.pedro.PedroCommands.follow;
+import com.pedropathing.ivy.Command;
+import static com.pedropathing.ivy.groups.Groups.sequential;
+
+@Autonomous
+public class PedroMovement extends OpMode{
+    private Follower follower;
+    private final PoseFactory p = PoseFactory.degrees();
+    // Poses
+    private final Pose startPose = p.of(0, 0, 90);
+    private final Pose park = p.of(10, 40, 90);
+
+    private Path park() {
+        return line(startPose, park).linear(startPose, park);
+    }
+    private Command autoRoutine() {
+        return sequential(
+                follow(follower, park())
+        );
+    }
+
+    @Override
+    public void init() {
+        Scheduler.reset();
+
+        follower = Constants.create(hardwareMap);
+        follower.setPose(startPose);
+
+    }
+
+    @Override
+    public void start() {
+        schedule(follow(follower, park()));
+        schedule(autoRoutine());
+    }
+
+    @Override
+    public void loop() {
+        follower.update();
+        Scheduler.execute();
+    }
+}
