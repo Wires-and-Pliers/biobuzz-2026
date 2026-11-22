@@ -22,13 +22,27 @@ public class PedroMovement extends OpMode{
     // Poses
     private final Pose startPose = p.of(0, 0, 90);
     private final Pose park = p.of(10, 40, 90);
+    private final Pose heading = p.of(0, 0, 90);
+    private final Pose end = p.of(10, 40, 90);
+    private final Pose point1Control1 = p.of(-10, 20, 0);
 
-    private Path park() {
+    private boolean configured = FALSE;
+
+    public Path curveTest() {
+        return curve(heading, point1Control1, end).linear(heading, end);
+    }
+
+    private Path lineTest() {
         return line(startPose, park).linear(startPose, park);
     }
-    private Command autoRoutine() {
+    private Command autoRoutineCurve() {
         return sequential(
-                follow(follower, park())
+                follow(follower, curveTest())
+        );
+    }
+    private Command autoRoutineLine() {
+        return sequential(
+                follow(follower, lineTest())
         );
     }
 
@@ -37,18 +51,25 @@ public class PedroMovement extends OpMode{
         Scheduler.reset();
 
         follower = Constants.create(hardwareMap);
-        follower.setPose(startPose);
+        follower.setPose(heading);
+        follower.update();
 
-    }
-
-    @Override
-    public void start() {
-        schedule(follow(follower, park()));
-        schedule(autoRoutine());
     }
 
     @Override
     public void loop() {
+
+        telemetry.addLine("a for curve test, b for line test");
+        telemetry.update();
+        while (configured != True) {
+        if (gamepad1.aWasPressed()) {
+            schedule(autoRoutineCurve());
+            configured = True;
+        } else if (gamepad1.bWasPressed()) {
+            schedule(autoRoutineLine());
+            configured = True;
+        }}
+
         follower.update();
         Scheduler.execute();
     }
