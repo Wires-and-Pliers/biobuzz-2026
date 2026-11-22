@@ -15,9 +15,13 @@ apply plugin: 'com.android.application'
 // Include common definitions from above.
 apply from: '../build.common.gradle'
 apply from: '../build.dependencies.gradle'
+apply plugin: 'org.jetbrains.kotlin.android'
 
 android {
     namespace = 'org.firstinspires.ftc.teamcode'
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
 
     packagingOptions {
         jniLibs.useLegacyPackaging true
@@ -26,5 +30,22 @@ android {
 
 dependencies {
     implementation project(':FtcRobotController')
+    implementation 'androidx.core:core-ktx:1.19.0'
     implementation "com.bylazar:fullpanels:1.0.19"
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core:1.6.0'
+        force 'androidx.core:core-ktx:1.6.0'
+        force 'androidx.annotation:annotation-experimental:1.1.0'
+        force 'androidx.lifecycle:lifecycle-livedata-core:2.3.1'
+        force 'androidx.lifecycle:lifecycle-viewmodel:2.3.1'
+        force 'androidx.lifecycle:lifecycle-livedata:2.3.1'
+        force 'androidx.lifecycle:lifecycle-runtime:2.3.1'
+        force 'androidx.profileinstaller:profileinstaller:1.1.0'
+        force 'androidx.startup:startup-runtime:1.0.0'
+        force 'androidx.tracing:tracing:1.0.0'
+        force 'androidx.arch.core:core-runtime:2.1.0'
+    }
 }
