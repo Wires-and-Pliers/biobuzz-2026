@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.TeleOp
 import org.firstinspires.ftc.teamcode.pedro.Constants
 import com.bylazar.gamepad.PanelsGamepad
 
-@TeleOp(name = "Pedro Pathing Teleop with Panels")
+@TeleOp(name = "Pedro Pathing Teleop with Panels Kotlin")
 class PedroTeleop : OpMode() {
     val controller1 = PanelsGamepad.firstManager
     private var follower: Follower? = null
