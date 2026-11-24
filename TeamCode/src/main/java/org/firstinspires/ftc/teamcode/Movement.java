@@ -5,6 +5,7 @@ import static org.firstinspires.ftc.robotcore.external.BlocksOpModeCompanion.har
 import com.qualcomm.hardware.rev.RevHubOrientationOnRobot;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
+import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.IMU;
 import com.qualcomm.robotcore.util.ElapsedTime;
@@ -13,7 +14,7 @@ import com.qualcomm.robotcore.eventloop.opmode.OpMode;
 import org.firstinspires.ftc.robotcore.external.navigation.AngleUnit;
 
 
-public class Movement  {
+public class Movement {
 
     ElapsedTime runtime = new ElapsedTime();
     DcMotor frontLeftDrive = null;
@@ -22,8 +23,8 @@ public class Movement  {
     DcMotor backRightDrive = null;
     IMU imu;
 
-    public void init()
-    {
+
+    public void init() {
 
         frontLeftDrive = hardwareMap.get(DcMotor.class, "front_left_drive");
         backLeftDrive = hardwareMap.get(DcMotor.class, "back_left_drive");
@@ -49,7 +50,7 @@ public class Movement  {
     }
 
 
-    public void move (double axial, double lateral, double yaw, DcMotor frontLeftDrive, DcMotor frontRightDrive, DcMotor backLeftDrive, DcMotor backRightDrive) {
+    public void move(double axial, double lateral, double yaw) {
 
 
         double frontLeftPower = axial + lateral + yaw;
@@ -76,6 +77,7 @@ public class Movement  {
         backLeftDrive.setPower(backLeftPower);
         backRightDrive.setPower(backRightPower);
     }
+
     public void driveFieldRelative(double forward, double right, double rotate) {
         // First, convert direction being asked to drive to polar coordinates
         double theta = Math.atan2(forward, right);
@@ -90,9 +92,7 @@ public class Movement  {
         double newRight = r * Math.cos(theta);
 
         // Finally, call the drive method with robot relative forward and right amounts
-        move(newForward, newRight, rotate, frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive);
+        move(newForward, newRight, rotate);
     }
-
-    public void loop() {}
 
 }

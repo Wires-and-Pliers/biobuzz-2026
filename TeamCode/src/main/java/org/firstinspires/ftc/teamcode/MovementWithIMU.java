@@ -63,7 +63,7 @@ public class MovementWithIMU extends OpMode{
         double newRight = r * Math.cos(theta);
 
         // Finally, call the drive method with robot relative forward and right amounts
-        mov.move(newForward, newRight, rotate, frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive);
+        mov.move(newForward, newRight, rotate);
     }
 
     @Override
@@ -81,7 +81,7 @@ public class MovementWithIMU extends OpMode{
         // (much like driving an RC vehicle)
         if (gamepad1.left_bumper) {
 
-            mov.move(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x, frontLeftDrive, frontRightDrive, backLeftDrive, backRightDrive);
+            mov.move(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         } else {
             driveFieldRelative(-gamepad1.left_stick_y, gamepad1.left_stick_x, gamepad1.right_stick_x);
         }

@@ -20,7 +20,6 @@ public class MovementTestAuto extends OpMode {
 
     @Override
     public void loop() {
-        Movement mov = new Movement();
         //mov.move(0,.5,0);
 
     }
